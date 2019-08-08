@@ -11,14 +11,25 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 @ChannelHandler.Sharable
+@Service
 @Slf4j
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+
+    private static NettyClientHandler handler;
+
+    @PostConstruct
+    private void init(){
+        handler = this;
+    }
+
     @Autowired
     private NettyClient nettyClient;
 
@@ -41,7 +52,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("关闭连接时：" + new Date());
         final EventLoop eventLoop = ctx.channel().eventLoop();
-        nettyClient.doConnect(new Bootstrap(), eventLoop);
+        handler.nettyClient.doConnect(new Bootstrap(), eventLoop);
         super.channelInactive(ctx);
     }
 
