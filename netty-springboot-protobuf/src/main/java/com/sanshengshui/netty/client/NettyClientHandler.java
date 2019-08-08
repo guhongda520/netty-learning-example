@@ -11,14 +11,25 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 @ChannelHandler.Sharable
+@Service // 1. 添加 @Component 注解
 @Slf4j
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+
+    private static NettyClientHandler handler; // 2. 定义本类的静态对象
+
+    @PostConstruct
+    private void init(){ // 3. 添加 @PostConstruct 注解的方法
+        handler = this;
+    }
+
     @Autowired
     private NettyClient nettyClient;
 
